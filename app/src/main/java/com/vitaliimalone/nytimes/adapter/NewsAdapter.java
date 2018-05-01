@@ -43,8 +43,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-        final News currentNews = news.get(position);
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        News currentNews = news.get(position);
 
         holder.titleTv.setText(currentNews.getTitle());
         holder.descriptionTv.setText(currentNews.getDescription());
@@ -56,36 +56,30 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                 .load(imageUrl)
                 .into(holder.imageIv);
 
-        final String url = currentNews.getUrl();
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                        .setToolbarColor(context.getResources().getColor(R.color.colorPrimary))
-                        .build();
-                customTabsIntent.launchUrl(context, Uri.parse(url));
-            }
+        String url = currentNews.getUrl();
+        holder.itemView.setOnClickListener(v -> {
+            CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
+                    .setToolbarColor(context.getResources().getColor(R.color.colorPrimary))
+                    .build();
+            customTabsIntent.launchUrl(context, Uri.parse(url));
         });
 
         if (currentNews.isFavorite()) {
             holder.favoriteButton.setImageResource(R.drawable.ic_favorite_red_24dp);
         }
-        holder.favoriteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!currentNews.isFavorite()) {
-                    currentNews.setFavorite(true);
-                    db.newsDao().insertNews(currentNews);
+        holder.favoriteButton.setOnClickListener(v -> {
+            if (!currentNews.isFavorite()) {
+                currentNews.setFavorite(true);
+                db.newsDao().insertNews(currentNews);
 
-                    holder.favoriteButton.setImageResource(R.drawable.ic_favorite_red_24dp);
-                    Toast.makeText(context, "Article added to favorites", Toast.LENGTH_SHORT).show();
-                } else {
-                    currentNews.setFavorite(false);
-                    db.newsDao().delete(currentNews);
+                holder.favoriteButton.setImageResource(R.drawable.ic_favorite_red_24dp);
+                Toast.makeText(context, "Article added to favorites", Toast.LENGTH_SHORT).show();
+            } else {
+                currentNews.setFavorite(false);
+                db.newsDao().delete(currentNews);
 
-                    holder.favoriteButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                    Toast.makeText(context, "Article removed from favorites", Toast.LENGTH_SHORT).show();
-                }
+                holder.favoriteButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                Toast.makeText(context, "Article removed from favorites", Toast.LENGTH_SHORT).show();
             }
         });
     }

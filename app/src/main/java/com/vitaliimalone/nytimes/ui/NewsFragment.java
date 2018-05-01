@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +15,21 @@ import com.vitaliimalone.nytimes.R;
 import com.vitaliimalone.nytimes.adapter.NewsAdapter;
 import com.vitaliimalone.nytimes.model.News;
 import com.vitaliimalone.nytimes.network.NewsApi;
-import com.vitaliimalone.nytimes.network.ServiceGenerator;
+import com.vitaliimalone.nytimes.network.NewsService;
 import com.vitaliimalone.nytimes.util.NetworkUtils;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class NewsFragment extends Fragment {
 
+    private static final String TAG = "NewsFragment";
     private static final String ARG_MOST_POPULAR = "mostPopularPath";
 
     @BindView(R.id.recycler_view)
@@ -74,21 +76,14 @@ public class NewsFragment extends Fragment {
         if (NetworkUtils.isOnline(getContext())) {
             String apiKey = getString(R.string.api_key);
 
-            NewsApi newsApi = ServiceGenerator.createService(NewsApi.class);
-            Call<List<News>> call = newsApi.getMostPopularNews(mostPopularPath, apiKey);
-            call.enqueue(new Callback<List<News>>() {
-                @Override
-                public void onResponse(Call<List<News>> call, Response<List<News>> response) {
-                    if (response.body() != null) {
-                        recyclerView.setAdapter(new NewsAdapter(response.body(), getContext()));
-                    }
-                }
+            NewsApi newsApi = NewsService.createService(NewsApi.class);
+            Flowable<List<News>> call = newsApi.getMostPopularNews(mostPopularPath, apiKey);
 
-                @Override
-                public void onFailure(Call<List<News>> call, Throwable t) {
-                    Toast.makeText(getContext(), R.string.error_loading_data, Toast.LENGTH_SHORT).show();
-                }
-            });
+            call.subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(news -> recyclerView.setAdapter(new NewsAdapter(news, getContext())),
+                            throwable -> Log.e(TAG, "updateUi: network error", throwable));
+
         } else {
             Toast.makeText(getContext(), R.string.no_internet_connection, Toast.LENGTH_SHORT).show();
         }
