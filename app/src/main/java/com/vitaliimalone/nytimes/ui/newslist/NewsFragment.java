@@ -63,9 +63,7 @@ public class NewsFragment extends Fragment implements NewsContract.View,
             mostPopularPath = getArguments().getString(ARG_MOST_POPULAR);
         }
 
-        AppDatabase db = AppDatabase.getAppDatabase(getContext());
-        NewsDataSource dataSource = new NewsRepository(db);
-        presenter = new NewsPresenter(dataSource, this);
+        presenter = new NewsPresenter(new NewsRepository(getContext()), this);
     }
 
     @Override

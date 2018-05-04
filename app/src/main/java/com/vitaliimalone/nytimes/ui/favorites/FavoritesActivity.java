@@ -44,9 +44,7 @@ public class FavoritesActivity extends AppCompatActivity implements FavoritesCon
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        AppDatabase db = AppDatabase.getAppDatabase(this);
-        NewsDataSource dataSource = new NewsRepository(db);
-        presenter = new FavoritesPresenter(dataSource, this);
+        presenter = new FavoritesPresenter(new NewsRepository(this), this);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

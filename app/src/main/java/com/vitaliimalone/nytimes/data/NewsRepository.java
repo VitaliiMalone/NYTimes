@@ -1,5 +1,7 @@
 package com.vitaliimalone.nytimes.data;
 
+import android.content.Context;
+
 import com.vitaliimalone.nytimes.data.db.AppDatabase;
 import com.vitaliimalone.nytimes.data.network.NewsApi;
 import com.vitaliimalone.nytimes.data.network.NewsService;
@@ -16,10 +18,9 @@ import io.reactivex.schedulers.Schedulers;
 public class NewsRepository implements NewsDataSource {
 
     private AppDatabase db;
-    private List<News> cachedNews;
 
-    public NewsRepository(AppDatabase db) {
-        this.db = db;
+    public NewsRepository(Context context) {
+        db = AppDatabase.getAppDatabase(context);
     }
 
 
