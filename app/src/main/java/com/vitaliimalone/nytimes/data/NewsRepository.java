@@ -8,7 +8,9 @@ import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 public class NewsRepository implements NewsDataSource {
@@ -24,7 +26,7 @@ public class NewsRepository implements NewsDataSource {
     @Override
     public void getNews(String mostPopularPath, String apiKey, GetNewsCallback callback) {
         NewsApi newsApi = NewsService.createService(NewsApi.class);
-        Observable<List<News>> call = newsApi.getMostPopularNews(mostPopularPath, apiKey);
+        Flowable<List<News>> call = newsApi.getMostPopularNews(mostPopularPath, apiKey);
 
         call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -35,11 +37,15 @@ public class NewsRepository implements NewsDataSource {
 
     @Override
     public void getNewsFromDb(GetNewsCallback callback) {
-        callback.onNewsLoaded(db.newsDao().getAll());
+        db.newsDao().getAll()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(callback::onNewsLoaded);
     }
 
     @Override
     public void saveNews(News savedNews) {
+
         db.newsDao().insertNews(savedNews);
     }
 

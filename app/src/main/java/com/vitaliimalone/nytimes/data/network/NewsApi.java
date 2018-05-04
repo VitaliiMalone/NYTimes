@@ -13,7 +13,7 @@ import retrofit2.http.Query;
 public interface NewsApi {
 
     @GET("{mostPath}/all-sections/30")
-    Observable<List<News>> getMostPopularNews(@Path("mostPath") String mostPath,
+    Flowable<List<News>> getMostPopularNews(@Path("mostPath") String mostPath,
                                               @Query("api-key") String apiKey);
 
 }

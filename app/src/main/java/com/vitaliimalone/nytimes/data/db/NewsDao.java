@@ -11,6 +11,8 @@ import com.vitaliimalone.nytimes.data.News;
 
 import java.util.List;
 
+import io.reactivex.Flowable;
+
 @Dao
 public interface NewsDao {
 
@@ -18,10 +20,7 @@ public interface NewsDao {
     void insertNews(News news);
 
     @Query("SELECT * FROM news")
-    List<News> getAll();
-
-    @Query("SELECT * FROM news WHERE isFavorite = 1")
-    List<News> getFavorites();
+    Flowable<List<News>> getAll();
 
     @Delete
     void delete(News news);
