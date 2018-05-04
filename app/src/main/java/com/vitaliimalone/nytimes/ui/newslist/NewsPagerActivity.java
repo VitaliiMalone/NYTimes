@@ -1,4 +1,4 @@
-package com.vitaliimalone.nytimes.ui;
+package com.vitaliimalone.nytimes.ui.newslist;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,11 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.vitaliimalone.nytimes.R;
+import com.vitaliimalone.nytimes.ui.favorites.FavoritesActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class NewsPagerActivity extends AppCompatActivity {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         PagerAdapter pagerAdapter = new CategoryPagerAdapter(getSupportFragmentManager());
+        viewPager.setOffscreenPageLimit(2);
         viewPager.setAdapter(pagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
     }

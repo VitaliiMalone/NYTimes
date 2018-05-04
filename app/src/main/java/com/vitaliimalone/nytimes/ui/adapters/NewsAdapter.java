@@ -1,8 +1,6 @@
-package com.vitaliimalone.nytimes.adapter;
+package com.vitaliimalone.nytimes.ui.adapters;
 
 import android.content.Context;
-import android.net.Uri;
-import android.support.customtabs.CustomTabsIntent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.vitaliimalone.nytimes.R;
-import com.vitaliimalone.nytimes.db.AppDatabase;
-import com.vitaliimalone.nytimes.model.News;
+import com.vitaliimalone.nytimes.data.News;
 
 import java.util.List;
 
@@ -25,14 +21,29 @@ import butterknife.ButterKnife;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
-    private List<News> news;
     private Context context;
-    private AppDatabase db;
+    private List<News> news;
+    private OnItemClickListener listener;
+    private OnFavoriteClickListener favListener;
 
-    public NewsAdapter(List<News> news, Context context) {
-        this.news = news;
+    public interface OnItemClickListener {
+        void onItemClick(News clickedNews);
+    }
+
+    public interface OnFavoriteClickListener {
+        void OnFavoriteClick(News clickedNews);
+    }
+
+    public NewsAdapter(Context context, List<News> news, OnItemClickListener listener, OnFavoriteClickListener favListener) {
         this.context = context;
-        db = AppDatabase.getAppDatabase(context);
+        this.news = news;
+        this.listener = listener;
+        this.favListener = favListener;
+    }
+
+    public void replaceData(List<News> news) {
+        this.news = news;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -56,32 +67,22 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                 .load(imageUrl)
                 .into(holder.imageIv);
 
-        String url = currentNews.getUrl();
-        holder.itemView.setOnClickListener(v -> {
-            CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setToolbarColor(context.getResources().getColor(R.color.colorPrimary))
-                    .build();
-            customTabsIntent.launchUrl(context, Uri.parse(url));
-        });
-
         if (currentNews.isFavorite()) {
             holder.favoriteButton.setImageResource(R.drawable.ic_favorite_red_24dp);
         }
+
         holder.favoriteButton.setOnClickListener(v -> {
-            if (!currentNews.isFavorite()) {
-                currentNews.setFavorite(true);
-                db.newsDao().insertNews(currentNews);
-
+            if (!currentNews.isFavorite()){
                 holder.favoriteButton.setImageResource(R.drawable.ic_favorite_red_24dp);
-                Toast.makeText(context, "Article added to favorites", Toast.LENGTH_SHORT).show();
+                currentNews.setFavorite(true);
             } else {
-                currentNews.setFavorite(false);
-                db.newsDao().delete(currentNews);
-
                 holder.favoriteButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
-                Toast.makeText(context, "Article removed from favorites", Toast.LENGTH_SHORT).show();
+                currentNews.setFavorite(false);
             }
+            favListener.OnFavoriteClick(currentNews);
         });
+
+        holder.itemView.setOnClickListener(v -> listener.onItemClick(currentNews));
     }
 
     @Override

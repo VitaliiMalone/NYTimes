@@ -1,9 +1,9 @@
-package com.vitaliimalone.nytimes.network;
+package com.vitaliimalone.nytimes.data.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.vitaliimalone.nytimes.model.News;
+import com.vitaliimalone.nytimes.data.News;
 
 import java.util.List;
 

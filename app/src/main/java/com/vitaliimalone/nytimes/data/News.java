@@ -1,5 +1,5 @@
 
-package com.vitaliimalone.nytimes.model;
+package com.vitaliimalone.nytimes.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -17,11 +17,12 @@ public class News {
     private String imageUrl;
     private boolean isFavorite;
 
+    @NonNull
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(@NonNull String url) {
         this.url = url;
     }
 

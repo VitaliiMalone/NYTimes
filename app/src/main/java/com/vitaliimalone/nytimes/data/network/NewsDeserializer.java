@@ -1,4 +1,4 @@
-package com.vitaliimalone.nytimes.network;
+package com.vitaliimalone.nytimes.data.network;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -6,7 +6,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.vitaliimalone.nytimes.model.News;
+import com.vitaliimalone.nytimes.data.News;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
